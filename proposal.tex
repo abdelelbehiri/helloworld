@@ -1,0 +1,57 @@
+
+
+\section{Motivation}
+
+% identification of most frequent items
+One of the most fundamental subroutines in data analysis is extracting the most frequent items in a data stream. Extracting the most frequent items is used in a variety of machine learning applications, such as feature selection~\cite{thoma2009near}, ranking~\cite{popescu2011text}, semi-supervised learning~\cite{ahmed2015semi}, and natural language processing~\cite{chowdhury2003natural}, but has also been utilized for network monitoring~\cite{li2010mining} and security~\cite{paredes2010automating}. Popular data processing libraries, such as Twitter's Algebird~\footnote{\url{https://github.com/twitter/algebird}}, have also included frequency estimating techniques~\cite{deng2007new}. In addition to its indirect use integrated in some more extensive logic, high-frequency item detection finds practical direct applications, e.g., to answer with efficient approximations  questions such as what are the most searched keywords on the Internet~\cite{rovetta2020covid} as well as how much data is sent between two devices in a network~\cite{mistry2016network}.
+
+% focus on streams
+Data volumes keep growing, and so efficiently prioritizing information in a gigantic mass becomes indispensable. Yet, the resources available to filter the data to the most relevant items are scarce in the face of the gigantic workload---e.g., in the context of the ever-growing Internet of Things (IoT) where billions of items are to be processed by devices with tightly limited storage, computing and network capabilities.
+% 
+In this challenging setup, because it is so resource-efficient by design, the stream processing paradigm, where every item is seen only once, has established itself as one of the most prominent forms of data processing. Determining the most important items in that context means tracking in real time the most important items when fed with infinite streams, i.e., only a finite amount of state can be kept even though the input is assumed to be of infinite size.
+% 
+In use cases like the detection of denial of service (DoS) attacks or identifying the most frequently purchased products in a stream, the importance of an item is typically its count, leading to the \emph{heavy hitter} detection problem.
+
+% learned heavy hitters
+An approach receiving particular attention lately to monitor the heavy hitters in a data stream efficiently consists in learned sketch models~\cite{hsu2019learning,kristo2020case,patil2021latest} where the data is represented in a latent form, i.e., as a learned model---typically a neural network--- as opposed to the traditional explicit form of sketches---e.g., Count-Min Sketch~\cite{cormode2005improved}, or Space Saving~\cite{mitzenmacher2012hierarchical}. The model is trained to learn the data patterns, i.e., the usual ingestion is replaced by some training, and the model is able to return data when requested, i.e., queries are traded for inferences; hence, an entire database is emulated by a model.
+
+% % models for streams
+% With the major significance of the streaming scenario and the high interest for models serving as learned databases has come a stringent need for models at the intersection, namely serving as databases taking in streams. In a streaming scenario, the pattern, or distribution (concept) to be learned by the tracking model changes (drifts) significantly over time: there is a concept drift~\cite{Widmer1996,yu2021automatic}, and particularly so compared to, e.g., a mostly static database.
+% The domains in which the data to be processed changes over time are very diverse. Invariably, though,
+% the data patterns are that the data changes very fast, e.g., in the Internet field, as flash crowds in Internet traffic as a whole~\cite{ari2003managing}.
+% This also holds in the myriad of fields with similar characteristics, e.g., marketing~\cite{kotler2005role} or recommendations on social media~\cite{}.
+% %
+% As indirect applications of most frequent element tracking, some well-known applications include frequent items, heavy changers, persistent items or super-spreaders~\cite{li2020wavingsketch}.
+% %
+% Yet, frequent estimation is too coarse on its own to satisfy meaningfully the breadth of use cases practitioners are confronted with. A key problem downstream of frequency estimation is to distinguish a genuine flash crowd~\cite{ari2003managing,oikonomou2009modeling}, which needs to be served, from a (Distributed) Denial of Service attack, which needs to be blocked. A refined modeling of data patterns is then necessary, typically looking at human-characteristic temporal patterns in the connection, to try to block malevolent flows~\cite{tandon2021defending} or to give users appropriate feedback when delays occur~\cite{tada2021mitigation}. And yet, even many more aspects would need to be taken into account to correctly represent the behavior of the target population~\cite{aljohani2021conducting} than is currently integrated in existing monitoring systems.
+% % 
+% In that context, while constant progress on actual estimations to make them more accurate for a lower amount of resources~\cite{huang2018sketchlearn,li2020wavingsketch} is beneficial, it is more the efficiency of larger pipelines that these estimations are integrated in that should be optimized. Unsurprisingly, some work has tried to optimize tracking performance for more high-level queries~\cite{zhao2021cluster,zhang2021cocosketch} and attempting to capture a holistic situational view leading up to events~\cite{husak2021system}. Yet, there is a need for a representation with much higher expressivity to really model a non-trivial fraction of the information and processes at play in organizations nowadays~\cite{turunen2021minimum}, generally in a vast array of microservices~\cite{debroy2019overcoming} and a highly heterogeneous set of processes as seen by different actors~\cite{sousa2019managing}.
+
+% % why latent driven by explicit is necessary
+% Hence, beyond frequency tracking, a more extensive modeling of the data is necessary and there the frequency is only one drive out of many in the model. There is a need for models where driven by simple metrics but with a representation that allows full expressivity. Typically, queries are generated interactively~\cite{kraska2021northstar}, e.g., to look for an interesting pattern (such as an anomaly) and approaches trying to store the data to optimize for queries~\cite{zhao2021cluster,zhang2021cocosketch} do not offer this flexibility in their expressivity because only a fraction of the information is maintained. A broader and more holistic representation of the entirety of the data is necessary and there the clear and easily understandable shallow metric of importance that the frequency is should be the drive, i.e., the weight, from which the importance of the data is derived (backwards attribution), and not the target, i.e., what is represented. There, a latent representation---in the continuity of the booming field of database learning~\cite{hilprecht2019deepdb,hasan2020deep}---is appropriate but, most importantly, this latent representation needs to be driven by an importance metric.
+% % in continuity with the discussion in Nebi's work, going further; latent vs. explicit
+
+
+% % concept drift in latent representation
+% When it comes to latent representation, yet, changes on the data become per nature hard to carry over, unlike regarding porting changes in the data to explicit representation such as a list: local changes in the data can have an arbitrary impact in the latent space. The most important case of data changing is when the dataset to represent is dynamic: the distribution of the dataset to store---the concept--- varies over time---drifts---: there is a concept drift.
+% %
+% Existing work attempting to represent the data driven by the simple importance metric that is the frequency~\cite{hsu2019learning} fails to account for the concept drift and is content with building a single model supposed to cover the distribution forever.
+% %
+% Yet, these shifts can be considerable and changes in the underlying distribution would have a detrimental impact on the model's performance: the underlying distribution drifts further and further away from the learned model.
+
+
+% % general approaches in literature
+% \subsection{General Strategies which can be applied for handling Concept Drift}
+
+% % current methods to concept drift and their cons
+% To prevent the model from becoming progressively obsolete, the usual approach is to update it on a regular basis.
+% % 
+% As a result, it is necessary to i) capture concept drift and ii) update the model in a way that is tailored to the concept drift observed---for example, discarding the most obsolete parts of earlier learning and attempting to learn what appears to be the most significant next.
+% % 
+% The state of the art has touched upon identifying the most critical elements to forget and learn by employing a time-aware transformer architecture over sequences~\cite{zhang2020time,ren2021rapt,sawhney2020time}.
+% % 
+% However, these methods do not offer a high degree of generality in capturing concept drift, nor do they provide a differentiated and understandable degree of control in the forgetting and learning driven by an explicit importance metric.
+% 
+% D.
+% unnecessary
+% 
